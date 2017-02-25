@@ -1,0 +1,16 @@
+[
+{
+  "modid": "easiervillagertrading",
+  "name": "Easier Villager Trading",
+  "description": "Less clicks to trade with villagers",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Giselbaer"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
