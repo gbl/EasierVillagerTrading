@@ -6,13 +6,12 @@
 package de.guntram.mcmod.easiervillagertrading;
 
 import java.io.IOException;
-import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMerchant;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
@@ -29,6 +28,13 @@ public class BetterGuiMerchant extends GuiMerchant {
     
     private final int addXSize=0;
     private final ItemStack tradeOK, tradeNOK;
+    private final int lineHeight=18;
+    private final int titleDistance=20;
+    private final int firstBuyItemXpos=0;
+    private final int secondBuyItemXpos=18;
+    private final int okNokXpos=40;
+    private final int sellItemXpos=60;
+    private final int textXpos=85;
     
     BetterGuiMerchant (InventoryPlayer inv, GuiMerchant template, World world) {
         super(inv, template.getMerchant(), world);
@@ -55,18 +61,21 @@ public class BetterGuiMerchant extends GuiMerchant {
         MerchantRecipeList trades=getMerchant().getRecipes(null);
         if (trades==null)
             return;
+        int topAdjust=getTopAdjust(trades.size());
         String s = trades.size()+" trades";
-        this.fontRenderer.drawString(s, this.xSize-addXSize+5, 0, 0xff00ff);
+        this.fontRenderer.drawString(s, this.xSize-addXSize+5, -topAdjust, 0xff00ff);
         // First draw all items, then all tooltips. This is extra effort,
         // but we don't want any items in front of any tooltips.
+        RenderHelper.enableStandardItemLighting();
+        RenderHelper.enableGUIStandardItemLighting();
         for (int i=0; i<trades.size(); i++) {
             MerchantRecipe trade=trades.get(i);
             ItemStack i1=trade.getItemToBuy();
             ItemStack i2=trade.hasSecondItemToBuy() ? trade.getSecondItemToBuy() : null;
             ItemStack o1=trade.getItemToSell();
-            drawItem(i1, this.xSize-addXSize+5,    i*18+20);
-            drawItem(i2, this.xSize-addXSize+5+18, i*18+20);
-            drawItem(o1, this.xSize-addXSize+5+60, i*18+20);
+            drawItem(i1, this.xSize-addXSize+5+firstBuyItemXpos,  i*lineHeight-topAdjust+titleDistance);
+            drawItem(i2, this.xSize-addXSize+5+secondBuyItemXpos, i*lineHeight-topAdjust+titleDistance);
+            drawItem(o1, this.xSize-addXSize+5+sellItemXpos,      i*lineHeight-topAdjust+titleDistance);
 
             NBTTagList enchantments;
             
@@ -83,26 +92,35 @@ public class BetterGuiMerchant extends GuiMerchant {
                     int j = enchantments.getCompoundTagAt(t).getShort("id");
                     int k = enchantments.getCompoundTagAt(t).getShort("lvl");
 
-                    if (Enchantment.getEnchantmentByID(j) != null)
+                    Enchantment enchant = Enchantment.getEnchantmentByID(j);
+                    if (enchant != null)
                     {
                         if (t>0)
                             enchants.append(", ");
-                        enchants.append(Enchantment.getEnchantmentByID(j).getTranslatedName(k));
+                        enchants.append(enchant.getTranslatedName(k));
                     }
                 }
-                fontRenderer.drawString(enchants.toString(), this.xSize-addXSize+85, i*18+24, 0xffff00);
+                fontRenderer.drawString(enchants.toString(), this.xSize-addXSize+textXpos, i*lineHeight-topAdjust+24, 0xffff00);
             }
-            drawItem(trade.isRecipeDisabled() ? tradeNOK : tradeOK, xSize-addXSize+5+40, i*18+20);
+            drawItem(trade.isRecipeDisabled() ? tradeNOK : tradeOK, xSize-addXSize+5+okNokXpos, i*lineHeight-topAdjust+titleDistance);
         }
+        RenderHelper.disableStandardItemLighting();
         for (int i=0; i<trades.size(); i++) {
             MerchantRecipe trade=trades.get(i);
             ItemStack i1=trade.getItemToBuy();
             ItemStack i2=trade.hasSecondItemToBuy() ? trade.getSecondItemToBuy() : null;
             ItemStack o1=trade.getItemToSell();
-            drawTooltip(i1, this.xSize-addXSize+5,    i*18+20, mouseX, mouseY);
-            drawTooltip(i2, this.xSize-addXSize+5+18, i*18+20, mouseX, mouseY);
-            drawTooltip(o1, this.xSize-addXSize+5+54, i*18+20, mouseX, mouseY);
+            drawTooltip(i1, this.xSize-addXSize+5+firstBuyItemXpos,    i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
+            drawTooltip(i2, this.xSize-addXSize+5+secondBuyItemXpos,   i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
+            drawTooltip(o1, this.xSize-addXSize+5+sellItemXpos,        i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
         }
+    }
+    
+    private int getTopAdjust(int numTrades) {
+        int topAdjust = ((numTrades * lineHeight + titleDistance) - this.ySize)/2;
+        if (topAdjust < 0)
+            topAdjust = 0;
+        return topAdjust;
     }
     
     private void drawItem(ItemStack stack, int x, int y) {
@@ -123,13 +141,19 @@ public class BetterGuiMerchant extends GuiMerchant {
 
     @Override
     protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
-        System.out.println("click at "+mouseX+"/"+mouseY);
-        if ((mouseX - this.guiLeft) > this.xSize-addXSize  && (mouseX - this.guiLeft) < this.xSize-addXSize+80) {
-            int tradeIndex=(mouseY-this.guiTop-20)/18;
+        // System.out.println("click at "+mouseX+"/"+mouseY);
+        if (mouseButton==0
+        &&  (mouseX - this.guiLeft) > this.xSize-addXSize
+        &&  (mouseX - this.guiLeft) < this.xSize-addXSize+textXpos
+        ) {
             MerchantRecipeList trades=getMerchant().getRecipes(null);
+            if (trades==null)
+                return;
             int numTrades=trades.size();
+            int topAdjust=getTopAdjust(numTrades);
+            int tradeIndex=(mouseY+topAdjust-this.guiTop-titleDistance)/lineHeight;
             if (tradeIndex>=0 && tradeIndex<numTrades) {
-                System.out.println("tradeIndex="+tradeIndex+", numTrades="+numTrades);
+                // System.out.println("tradeIndex="+tradeIndex+", numTrades="+numTrades);
                 GuiButton myNextButton = this.buttonList.get(0);
                 GuiButton myPrevButton = this.buttonList.get(1);
                 for (int i=0; i<numTrades; i++)
@@ -172,8 +196,8 @@ public class BetterGuiMerchant extends GuiMerchant {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
             if (invstack==null)
                 continue;
-            if (stack.getItem().equals(invstack.getItem())) {
-                System.out.println("taking "+invstack.getCount()+" items from slot # "+i);
+            if (areItemStacksMergable(stack, invstack)) {
+                //System.out.println("taking "+invstack.getCount()+" items from slot # "+i);
                 remaining-=invstack.getCount();
             }
             if (remaining<=0)
@@ -187,11 +211,12 @@ public class BetterGuiMerchant extends GuiMerchant {
         for (int i=inventorySlots.inventorySlots.size()-36; i<inventorySlots.inventorySlots.size(); i++) {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
             if (invstack==null || invstack.isEmpty()) {
-                System.out.println("can put result into empty slot "+i);
+                //System.out.println("can put result into empty slot "+i);
                 return true;
             }
-            if (stack.getItem().equals(invstack.getItem())) {
-                System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
+            if (areItemStacksMergable(stack, invstack)
+            &&  stack.getMaxStackSize() >= stack.getCount() + invstack.getCount()) {
+                //System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
                 remaining-=(invstack.getMaxStackSize()-invstack.getCount());
             }
             if (remaining<=0)
@@ -201,21 +226,21 @@ public class BetterGuiMerchant extends GuiMerchant {
     }
     
     private void transact(MerchantRecipe recipe) {
-        System.out.println("fill input slots called");
-        int putback0=-1, putback1=-1;
+        //System.out.println("fill input slots called");
+        int putback0, putback1=-1;
         putback0=fillSlot(0, recipe.getItemToBuy());
         if (recipe.hasSecondItemToBuy()) {
             putback1=fillSlot(1, recipe.getSecondItemToBuy());
         }
         getslot(2, recipe.getItemToSell(), putback0, putback1);
-        System.out.println("putting back to slot "+putback0+" from 0, and to "+putback1+"from 1");
+        //System.out.println("putting back to slot "+putback0+" from 0, and to "+putback1+"from 1");
         if (putback0!=-1) {
-            mc.playerController.windowClick(mc.player.openContainer.windowId, 0, 0, ClickType.PICKUP, mc.player);
-            mc.playerController.windowClick(mc.player.openContainer.windowId, putback0, 0, ClickType.PICKUP, mc.player);
+            slotClick(0);
+            slotClick(putback0);
         }
         if (putback1!=-1) {
-            mc.playerController.windowClick(mc.player.openContainer.windowId, 1, 0, ClickType.PICKUP, mc.player);
-            mc.playerController.windowClick(mc.player.openContainer.windowId, putback1, 0, ClickType.PICKUP, mc.player);
+            slotClick(1);
+            slotClick(putback1);
         }
     }
 
@@ -233,16 +258,16 @@ public class BetterGuiMerchant extends GuiMerchant {
             if (invstack==null)
                 continue;
             boolean needPutBack=false;
-            if (stack.getItem().equals(invstack.getItem())) {
+            if (areItemStacksMergable(stack, invstack)) {
                 if (stack.getCount()+invstack.getCount() > stack.getMaxStackSize())
                     needPutBack=true;
                 remaining-=invstack.getCount();
-                System.out.println("taking "+invstack.getCount()+" items from slot # "+i+", remaining is now "+remaining);
-                mc.playerController.windowClick(mc.player.openContainer.windowId, i, 0, ClickType.PICKUP, mc.player);
-                mc.playerController.windowClick(mc.player.openContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
+                // System.out.println("taking "+invstack.getCount()+" items from slot # "+i+", remaining is now "+remaining);
+                slotClick(i);
+                slotClick(slot);
             }
             if (needPutBack) {
-                mc.playerController.windowClick(mc.player.openContainer.windowId, i, 0, ClickType.PICKUP, mc.player);
+                slotClick(i);
             }
             if (remaining<=0)
                 return remaining<0 ? i : -1;
@@ -252,18 +277,30 @@ public class BetterGuiMerchant extends GuiMerchant {
         return -1;
     }
     
+    private boolean areItemStacksMergable(ItemStack a, ItemStack b) {
+        if (a==null || b==null)
+            return false;
+        if (a.getItem() == b.getItem()
+        &&  (!a.getHasSubtypes() || a.getItemDamage()==b.getItemDamage())
+        &&   ItemStack.areItemStackTagsEqual(a, b))
+            return true;
+        return false;
+    }
+    
     private void getslot(int slot, ItemStack stack, int... forbidden) {
         int remaining=stack.getCount();
-        mc.playerController.windowClick(mc.player.openContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
+        slotClick(slot);
         for (int i=inventorySlots.inventorySlots.size()-36; i<inventorySlots.inventorySlots.size(); i++) {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
             if (invstack==null || invstack.isEmpty()) {
                 continue;
             }
-            if (stack.getItem().equals(invstack.getItem())) {
-                System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
+            if (areItemStacksMergable(stack, invstack)
+                && invstack.getCount() < invstack.getMaxStackSize()
+            ) {
+                // System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
                 remaining-=(invstack.getMaxStackSize()-invstack.getCount());
-                mc.playerController.windowClick(mc.player.openContainer.windowId, i, 0, ClickType.PICKUP, mc.player);
+                slotClick(i);
             }
             if (remaining<=0)
                 return;
@@ -280,10 +317,15 @@ public class BetterGuiMerchant extends GuiMerchant {
                 continue;
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
             if (invstack==null || invstack.isEmpty()) {
-                mc.playerController.windowClick(mc.player.openContainer.windowId, i, 0, ClickType.PICKUP, mc.player);
-                System.out.println("putting result into empty slot "+i);
+                slotClick(i);
+                // System.out.println("putting result into empty slot "+i);
                 return;
             }
         }
+    }
+    
+    private void slotClick(int slot) {
+        System.out.println("Clicking slot "+slot);
+        mc.playerController.windowClick(mc.player.openContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
     }
 }
