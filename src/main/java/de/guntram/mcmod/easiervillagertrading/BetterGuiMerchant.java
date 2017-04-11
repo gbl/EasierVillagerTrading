@@ -26,7 +26,7 @@ import net.minecraft.world.World;
  */
 public class BetterGuiMerchant extends GuiMerchant {
     
-    private final int addXSize=0;
+    private int xBase=0;
     private final ItemStack tradeOK, tradeNOK;
     private final int lineHeight=18;
     private final int titleDistance=20;
@@ -38,7 +38,13 @@ public class BetterGuiMerchant extends GuiMerchant {
     
     BetterGuiMerchant (InventoryPlayer inv, GuiMerchant template, World world) {
         super(inv, template.getMerchant(), world);
-        this.xSize+=addXSize;
+        if (ConfigurationHandler.showLeft()) {
+            xBase=-ConfigurationHandler.leftPixelOffset();
+            if (xBase==0)
+                xBase=-this.getXSize();
+        }
+        else
+            xBase=this.getXSize()+5;
         tradeOK=new ItemStack(Item.getItemById(351), 1, 2);
         tradeNOK=new ItemStack(Item.getItemById(351), 1, 1);
     }
@@ -63,7 +69,7 @@ public class BetterGuiMerchant extends GuiMerchant {
             return;
         int topAdjust=getTopAdjust(trades.size());
         String s = trades.size()+" trades";
-        this.fontRenderer.drawString(s, this.xSize-addXSize+5, -topAdjust, 0xff00ff);
+        this.fontRenderer.drawString(s, xBase, -topAdjust, 0xff00ff);
         // First draw all items, then all tooltips. This is extra effort,
         // but we don't want any items in front of any tooltips.
         RenderHelper.enableStandardItemLighting();
@@ -73,9 +79,9 @@ public class BetterGuiMerchant extends GuiMerchant {
             ItemStack i1=trade.getItemToBuy();
             ItemStack i2=trade.hasSecondItemToBuy() ? trade.getSecondItemToBuy() : null;
             ItemStack o1=trade.getItemToSell();
-            drawItem(i1, this.xSize-addXSize+5+firstBuyItemXpos,  i*lineHeight-topAdjust+titleDistance);
-            drawItem(i2, this.xSize-addXSize+5+secondBuyItemXpos, i*lineHeight-topAdjust+titleDistance);
-            drawItem(o1, this.xSize-addXSize+5+sellItemXpos,      i*lineHeight-topAdjust+titleDistance);
+            drawItem(i1, xBase+firstBuyItemXpos,  i*lineHeight-topAdjust+titleDistance);
+            drawItem(i2, xBase+secondBuyItemXpos, i*lineHeight-topAdjust+titleDistance);
+            drawItem(o1, xBase+sellItemXpos,      i*lineHeight-topAdjust+titleDistance);
 
             NBTTagList enchantments;
             
@@ -100,9 +106,12 @@ public class BetterGuiMerchant extends GuiMerchant {
                         enchants.append(enchant.getTranslatedName(k));
                     }
                 }
-                fontRenderer.drawString(enchants.toString(), this.xSize-addXSize+textXpos, i*lineHeight-topAdjust+24, 0xffff00);
+                String shownEnchants=enchants.toString();
+                if (xBase<0)
+                    shownEnchants=fontRenderer.trimStringToWidth(shownEnchants, -xBase-textXpos-5);
+                fontRenderer.drawString(shownEnchants, xBase+textXpos, i*lineHeight-topAdjust+24, 0xffff00);
             }
-            drawItem(trade.isRecipeDisabled() ? tradeNOK : tradeOK, xSize-addXSize+5+okNokXpos, i*lineHeight-topAdjust+titleDistance);
+            drawItem(trade.isRecipeDisabled() ? tradeNOK : tradeOK, xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance);
         }
         RenderHelper.disableStandardItemLighting();
         for (int i=0; i<trades.size(); i++) {
@@ -110,9 +119,9 @@ public class BetterGuiMerchant extends GuiMerchant {
             ItemStack i1=trade.getItemToBuy();
             ItemStack i2=trade.hasSecondItemToBuy() ? trade.getSecondItemToBuy() : null;
             ItemStack o1=trade.getItemToSell();
-            drawTooltip(i1, this.xSize-addXSize+5+firstBuyItemXpos,    i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
-            drawTooltip(i2, this.xSize-addXSize+5+secondBuyItemXpos,   i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
-            drawTooltip(o1, this.xSize-addXSize+5+sellItemXpos,        i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
+            drawTooltip(i1, xBase+firstBuyItemXpos,    i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
+            drawTooltip(i2, xBase+secondBuyItemXpos,   i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
+            drawTooltip(o1, xBase+sellItemXpos,        i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
         }
     }
     
@@ -143,8 +152,8 @@ public class BetterGuiMerchant extends GuiMerchant {
     protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         // System.out.println("click at "+mouseX+"/"+mouseY);
         if (mouseButton==0
-        &&  (mouseX - this.guiLeft) > this.xSize-addXSize
-        &&  (mouseX - this.guiLeft) < this.xSize-addXSize+textXpos
+        &&  (mouseX - this.guiLeft) >= xBase
+        &&  (mouseX - this.guiLeft) <= xBase+textXpos
         ) {
             MerchantRecipeList trades=getMerchant().getRecipes(null);
             if (trades==null)
