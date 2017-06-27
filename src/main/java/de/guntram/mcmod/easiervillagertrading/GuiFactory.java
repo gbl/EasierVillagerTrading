@@ -17,22 +17,12 @@ public class GuiFactory implements IModGuiFactory {
     }
     
     @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return de.guntram.mcmod.easiervillagertrading.GuiConfig.class;
-    }
-    
-    @Override
     public GuiScreen createConfigGui(GuiScreen parentScreen) {
         return new GuiConfig(parentScreen);
     }
     
     @Override
     public Set<IModGuiFactory.RuntimeOptionCategoryElement> runtimeGuiCategories() {
-        return null;
-    }
-    
-    @Override
-    public IModGuiFactory.RuntimeOptionGuiHandler getHandlerFor(final IModGuiFactory.RuntimeOptionCategoryElement element) {
         return null;
     }
 }
