@@ -14,6 +14,7 @@ public class ConfigurationHandler {
     private String configFileName;
     private boolean showLeft;
     private int leftPixelOffset;
+    private boolean autoFocusSearch;
 
     public static ConfigurationHandler getInstance() {
         if (instance==null)
@@ -59,4 +60,5 @@ public class ConfigurationHandler {
     
     public static boolean showLeft() { return getInstance().showLeft; }
     public static int leftPixelOffset() { return getInstance().leftPixelOffset; }
+    public static boolean autoFocusSearch() { return getInstance().autoFocusSearch; }
 }
