@@ -334,7 +334,7 @@ public class BetterGuiMerchant extends GuiMerchant {
     }
     
     private void slotClick(int slot) {
-        System.out.println("Clicking slot "+slot);
+        // System.out.println("Clicking slot "+slot);
         mc.playerController.windowClick(mc.player.openContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
     }
 }
