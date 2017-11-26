@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class EasierVillagerTrading {
 
     public static final String MODID = "easiervillagertrading";
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "1.2";
     
     @EventHandler
     public void init(FMLInitializationEvent event)
