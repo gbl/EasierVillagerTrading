@@ -8,6 +8,7 @@ package de.guntram.mcmod.easiervillagertrading;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMerchant;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -114,8 +115,9 @@ public class BetterGuiMerchant extends GuiMerchant {
         }
         RenderHelper.disableStandardItemLighting();
 
-// arrows; use standard item lighting for them so we need a separate loop
-        this.mc.getTextureManager().bindTexture(icons);
+        GlStateManager.color(1f, 1f, 1f, 1f);               // needed so items don't get a text color overlay
+        GlStateManager.enableBlend();
+        this.mc.getTextureManager().bindTexture(icons);     // arrows; use standard item lighting for them so we need a separate loop
         for (int i=0; i<trades.size(); i++) {
             MerchantRecipe trade=trades.get(i);        
             if (!trade.isRecipeDisabled()
