@@ -8,14 +8,15 @@ package de.guntram.mcmod.easiervillagertrading;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMerchant;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
@@ -27,7 +28,6 @@ import net.minecraft.world.World;
 public class BetterGuiMerchant extends GuiMerchant {
     
     private int xBase=0;
-    private final ItemStack tradeOK, tradeNOK;
     private final int lineHeight=18;
     private final int titleDistance=20;
     private final int firstBuyItemXpos=0;
@@ -35,6 +35,7 @@ public class BetterGuiMerchant extends GuiMerchant {
     private final int okNokXpos=40;
     private final int sellItemXpos=60;
     private final int textXpos=85;
+    private static final ResourceLocation icons=new ResourceLocation(EasierVillagerTrading.MODID, "textures/icons.png");
     
     BetterGuiMerchant (InventoryPlayer inv, GuiMerchant template, World world) {
         super(inv, template.getMerchant(), world);
@@ -45,8 +46,7 @@ public class BetterGuiMerchant extends GuiMerchant {
         }
         else
             xBase=this.getXSize()+5;
-        tradeOK=new ItemStack(Item.getItemById(351), 1, 2);
-        tradeNOK=new ItemStack(Item.getItemById(351), 1, 1);
+        System.out.println("icons="+icons);
     }
     
     @Override
@@ -72,7 +72,7 @@ public class BetterGuiMerchant extends GuiMerchant {
         this.fontRenderer.drawString(s, xBase, -topAdjust, 0xff00ff);
         // First draw all items, then all tooltips. This is extra effort,
         // but we don't want any items in front of any tooltips.
-        RenderHelper.enableStandardItemLighting();
+
         RenderHelper.enableGUIStandardItemLighting();
         for (int i=0; i<trades.size(); i++) {
             MerchantRecipe trade=trades.get(i);
@@ -111,9 +111,28 @@ public class BetterGuiMerchant extends GuiMerchant {
                     shownEnchants=fontRenderer.trimStringToWidth(shownEnchants, -xBase-textXpos-5);
                 fontRenderer.drawString(shownEnchants, xBase+textXpos, i*lineHeight-topAdjust+24, 0xffff00);
             }
-            drawItem(trade.isRecipeDisabled() ? tradeNOK : tradeOK, xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance);
         }
         RenderHelper.disableStandardItemLighting();
+
+
+	GlStateManager.color(1f, 1f, 1f, 1f);
+	GlStateManager.enableBlend();
+        this.mc.getTextureManager().bindTexture(icons);		// arrows; use standard item lighting for them so we need a separate loop
+        for (int i=0; i<trades.size(); i++) {
+            MerchantRecipe trade=trades.get(i);        
+            if (!trade.isRecipeDisabled()
+                &&  inputSlotsAreEmpty()
+                &&  hasEnoughItemsInInventory(trade)
+                &&  canReceiveOutput(trade.getItemToSell())) {
+                    this.drawTexturedModalRect(xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance, 6*18, 2*18, 18, 18);   // green arrow right
+            } else if (!trade.isRecipeDisabled()) {
+                this.drawTexturedModalRect(xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance, 5*18, 3*18, 18, 18);       // empty arrow right
+            } else {
+                this.drawTexturedModalRect(xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance, 12*18, 3*18, 18, 18);      // red X
+            }
+        }
+
+// tooltips        
         for (int i=0; i<trades.size(); i++) {
             MerchantRecipe trade=trades.get(i);
             ItemStack i1=trade.getItemToBuy();
@@ -176,7 +195,6 @@ public class BetterGuiMerchant extends GuiMerchant {
                 &&  canReceiveOutput(recipe.getItemToSell())) {
                     transact(recipe);
                 }
-                
             }
         } else {
             super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -334,7 +352,7 @@ public class BetterGuiMerchant extends GuiMerchant {
     }
     
     private void slotClick(int slot) {
-        System.out.println("Clicking slot "+slot);
+        // System.out.println("Clicking slot "+slot);
         mc.playerController.windowClick(mc.player.openContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
     }
 }
