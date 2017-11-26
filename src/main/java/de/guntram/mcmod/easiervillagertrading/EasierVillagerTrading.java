@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
         version = EasierVillagerTrading.VERSION,
 	clientSideOnly = true, 
 	guiFactory = "de.guntram.mcmod.easiervillagertrading.GuiFactory",
-	acceptedMinecraftVersions = "[1.11.2]",
+	acceptedMinecraftVersions = "[1.10.2]",
         dependencies = "after:jei"
 )
 

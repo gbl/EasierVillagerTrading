@@ -42,10 +42,10 @@ public class BetterGuiMerchant extends GuiMerchant {
         if (ConfigurationHandler.showLeft()) {
             xBase=-ConfigurationHandler.leftPixelOffset();
             if (xBase==0)
-                xBase=-this.getXSize();
+                xBase=-this.xSize;
         }
         else
-            xBase=this.getXSize()+5;
+            xBase=this.xSize+5;
         System.out.println("icons="+icons);
     }
     
@@ -218,14 +218,14 @@ public class BetterGuiMerchant extends GuiMerchant {
     }
     
     private boolean hasEnoughItemsInInventory(ItemStack stack) {
-        int remaining=stack.getCount();
+        int remaining=stack.stackSize;
         for (int i=inventorySlots.inventorySlots.size()-36; i<inventorySlots.inventorySlots.size(); i++) {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
             if (invstack==null)
                 continue;
             if (areItemStacksMergable(stack, invstack)) {
                 //System.out.println("taking "+invstack.getCount()+" items from slot # "+i);
-                remaining-=invstack.getCount();
+                remaining-=invstack.stackSize;
             }
             if (remaining<=0)
                 return true;
@@ -234,17 +234,17 @@ public class BetterGuiMerchant extends GuiMerchant {
     }
 
     private boolean canReceiveOutput(ItemStack stack) {
-        int remaining=stack.getCount();
+        int remaining=stack.stackSize;
         for (int i=inventorySlots.inventorySlots.size()-36; i<inventorySlots.inventorySlots.size(); i++) {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
-            if (invstack==null || invstack.isEmpty()) {
+            if (invstack==null || invstack.stackSize==0) {
                 //System.out.println("can put result into empty slot "+i);
                 return true;
             }
             if (areItemStacksMergable(stack, invstack)
-            &&  stack.getMaxStackSize() >= stack.getCount() + invstack.getCount()) {
+            &&  stack.getMaxStackSize() >= stack.stackSize+ invstack.stackSize) {
                 //System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
-                remaining-=(invstack.getMaxStackSize()-invstack.getCount());
+                remaining-=(invstack.getMaxStackSize()-invstack.stackSize);
             }
             if (remaining<=0)
                 return true;
@@ -279,16 +279,16 @@ public class BetterGuiMerchant extends GuiMerchant {
      * after the transaction. May be -1 if nothing needs to be put back.
      */
     private int fillSlot(int slot, ItemStack stack) {
-        int remaining=stack.getCount();
+        int remaining=stack.stackSize;
         for (int i=inventorySlots.inventorySlots.size()-36; i<inventorySlots.inventorySlots.size(); i++) {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
             if (invstack==null)
                 continue;
             boolean needPutBack=false;
             if (areItemStacksMergable(stack, invstack)) {
-                if (stack.getCount()+invstack.getCount() > stack.getMaxStackSize())
+                if (stack.stackSize+invstack.stackSize > stack.getMaxStackSize())
                     needPutBack=true;
-                remaining-=invstack.getCount();
+                remaining-=invstack.stackSize;
                 // System.out.println("taking "+invstack.getCount()+" items from slot # "+i+", remaining is now "+remaining);
                 slotClick(i);
                 slotClick(slot);
@@ -315,18 +315,18 @@ public class BetterGuiMerchant extends GuiMerchant {
     }
     
     private void getslot(int slot, ItemStack stack, int... forbidden) {
-        int remaining=stack.getCount();
+        int remaining=stack.stackSize;
         slotClick(slot);
         for (int i=inventorySlots.inventorySlots.size()-36; i<inventorySlots.inventorySlots.size(); i++) {
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
-            if (invstack==null || invstack.isEmpty()) {
+            if (invstack==null || invstack.stackSize==0) {
                 continue;
             }
             if (areItemStacksMergable(stack, invstack)
-                && invstack.getCount() < invstack.getMaxStackSize()
+                && invstack.stackSize < invstack.getMaxStackSize()
             ) {
                 // System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
-                remaining-=(invstack.getMaxStackSize()-invstack.getCount());
+                remaining-=(invstack.getMaxStackSize()-invstack.stackSize);
                 slotClick(i);
             }
             if (remaining<=0)
@@ -343,7 +343,7 @@ public class BetterGuiMerchant extends GuiMerchant {
             if (isForbidden)
                 continue;
             ItemStack invstack=inventorySlots.getSlot(i).getStack();
-            if (invstack==null || invstack.isEmpty()) {
+            if (invstack==null || invstack.stackSize==0) {
                 slotClick(i);
                 // System.out.println("putting result into empty slot "+i);
                 return;
