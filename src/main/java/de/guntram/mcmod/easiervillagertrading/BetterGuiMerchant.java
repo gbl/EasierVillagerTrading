@@ -6,6 +6,7 @@
 package de.guntram.mcmod.easiervillagertrading;
 
 import java.io.IOException;
+import org.lwjgl.input.Keyboard;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMerchant;
 import net.minecraft.client.renderer.GlStateManager;
