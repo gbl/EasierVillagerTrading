@@ -47,7 +47,7 @@ public class BetterGuiMerchant extends GuiMerchant {
         }
         else
             xBase=this.getXSize()+5;
-        System.out.println("icons="+icons);
+        //System.out.println("icons="+icons);
     }
     
     @Override
@@ -189,12 +189,21 @@ public class BetterGuiMerchant extends GuiMerchant {
                 for (int i=0; i<tradeIndex; i++)
                     this.actionPerformed(myNextButton);
                 MerchantRecipe recipe=trades.get(tradeIndex);
-                if (!recipe.isRecipeDisabled()
-                &&  inputSlotsAreEmpty()
-                &&  hasEnoughItemsInInventory(recipe)
-                &&  canReceiveOutput(recipe.getItemToSell())) {
-                    transact(recipe);
-                }
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+					while (!recipe.isRecipeDisabled())
+						if (!recipe.isRecipeDisabled()
+								&& inputSlotsAreEmpty()
+								&& hasEnoughItemsInInventory(recipe)
+								&& canReceiveOutput(recipe.getItemToSell()))
+							transact(recipe);
+						else
+							break;
+				else if (!recipe.isRecipeDisabled()
+						&& inputSlotsAreEmpty()
+						&& hasEnoughItemsInInventory(recipe)
+						&& canReceiveOutput(recipe.getItemToSell())) {
+					transact(recipe);
+				}
             }
         } else {
             super.mouseClicked(mouseX, mouseY, mouseButton);
