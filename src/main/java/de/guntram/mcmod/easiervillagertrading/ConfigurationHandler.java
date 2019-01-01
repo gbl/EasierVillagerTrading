@@ -1,16 +1,18 @@
 package de.guntram.mcmod.easiervillagertrading;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import java.io.File;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.util.text.TextComponentString;
+import org.dimdev.rift.listener.client.LocalCommandAdder;
 
-public class ConfigurationHandler {
+public class ConfigurationHandler implements LocalCommandAdder {
 
     private static ConfigurationHandler instance;
 
-    private Configuration config;
     private String configFileName;
     private boolean showLeft;
     private int leftPixelOffset;
@@ -23,35 +25,11 @@ public class ConfigurationHandler {
     }
 
     public void load(final File configFile) {
-        if (config == null) {
-            config = new Configuration(configFile);
-            configFileName=configFile.getPath();
-            loadConfig();
-        }
     }
 
-    @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-        // System.out.println("OnConfigChanged for "+event.getModID());
-        if (event.getModID().equalsIgnoreCase(EasierVillagerTrading.MODID)) {
-            loadConfig();
-        }
-    }
-    
     private void loadConfig() {
-        showLeft=config.getBoolean("Trades list left", Configuration.CATEGORY_CLIENT, 
-                Loader.isModLoaded("jei"),
-                "Show trades list to the left, for Just Enough Items compatibility");
-        leftPixelOffset=config.getInt("Trades left pixel offset", Configuration.CATEGORY_CLIENT,
-                0, 0, Integer.MAX_VALUE, 
-                "How many pixels left of the GUI the trades list will be shown. Use 0 for auto detect. "+
-                "Only used if Trades list left is true.");
-        if (config.hasChanged())
-            config.save();
-    }
-    
-    public static Configuration getConfig() {
-        return getInstance().config;
+        showLeft=false;
+        leftPixelOffset=0;
     }
     
     public static String getConfigFileName() {
@@ -61,4 +39,33 @@ public class ConfigurationHandler {
     public static boolean showLeft() { return getInstance().showLeft; }
     public static int leftPixelOffset() { return getInstance().leftPixelOffset; }
     public static boolean autoFocusSearch() { return getInstance().autoFocusSearch; }
+
+    @Override
+    public void registerLocalCommands(CommandDispatcher<CommandSource> cd) {
+        cd.register(
+            Commands.literal("easiervillagertrading")
+                .then(
+                    Commands.literal("left").executes(c->{
+                        getInstance().showLeft=true;
+                        Minecraft.getInstance().player.sendMessage(new TextComponentString("Gui will be shown left"));
+                        return 1;
+                    })
+                )
+                .then(
+                    Commands.literal("right").executes(c->{
+                        getInstance().showLeft=false;
+                        Minecraft.getInstance().player.sendMessage(new TextComponentString("Gui will be shown right"));
+                        return 1;
+                    })
+                )
+                .then (
+                    Commands.argument("pixels", IntegerArgumentType.integer()).executes (c->{
+                        getInstance().leftPixelOffset=IntegerArgumentType.getInteger(c, "pixels");
+                        getInstance().showLeft=true;
+                        Minecraft.getInstance().player.sendMessage(new TextComponentString("Gui will be shown "+IntegerArgumentType.getInteger(c, "pixels")+" pixels left of trade window"));
+                        return 1;
+                    })
+                )
+        );
+    }
 }

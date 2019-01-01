@@ -1,0 +1,5 @@
+# public field net.minecraft.client.gui.GuiMerchant selectedMerchantRecipe
+public field clq B I
+#
+# public method net.mincraft.client.gui.GuiMerchant func_195391_j()
+public method clq j ()V 

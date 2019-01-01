@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "de.guntram.mcmod.easiervillagertrading.mixins",
+    "refmap": "mixins.easiervillagertrading.refmap.json",
+    "minVersion": "0.6",
+    "client": [
+        "GuiMerchantMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

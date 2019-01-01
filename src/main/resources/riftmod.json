@@ -1,0 +1,11 @@
+{
+    "id": "easiervillagertrading",
+    "name": "EasierVillagerTrading",
+    "authors": [
+        "Giselbaer"
+    ],
+    "listeners": [
+        "de.guntram.mcmod.easiervillagertrading.EasierVillagerTrading",
+        "de.guntram.mcmod.easiervillagertrading.ConfigurationHandler"
+    ]
+}
