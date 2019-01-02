@@ -10,10 +10,10 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMerchant;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
@@ -47,7 +47,6 @@ public class BetterGuiMerchant extends GuiMerchant {
         }
         else
             xBase=this.getXSize()+5;
-        System.out.println("icons="+icons);
     }
     
     @Override
@@ -118,29 +117,41 @@ public class BetterGuiMerchant extends GuiMerchant {
         GlStateManager.color(1f, 1f, 1f, 1f);               // needed so items don't get a text color overlay
         GlStateManager.enableBlend();
         this.mc.getTextureManager().bindTexture(icons);     // arrows; use standard item lighting for them so we need a separate loop
+        int arrowX=xBase+okNokXpos;
+        int[] tradeState=new int[trades.size()];
         for (int i=0; i<trades.size(); i++) {
+            int y=i*lineHeight-topAdjust+titleDistance;
             MerchantRecipe trade=trades.get(i);        
             if (!trade.isRecipeDisabled()
                 &&  inputSlotsAreEmpty()
                 &&  hasEnoughItemsInInventory(trade)
                 &&  canReceiveOutput(trade.getItemToSell())) {
-                    this.drawTexturedModalRect(xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance, 6*18, 2*18, 18, 18);   // green arrow right
+                    this.drawTexturedModalRect(arrowX, y, 6*18, 2*18, 18, 18);   // green arrow right
+                    tradeState[i]=0;
             } else if (!trade.isRecipeDisabled()) {
-                this.drawTexturedModalRect(xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance, 5*18, 3*18, 18, 18);       // empty arrow right
+                this.drawTexturedModalRect(arrowX, y, 5*18, 3*18, 18, 18);       // empty arrow right
+                tradeState[i]=1;
             } else {
-                this.drawTexturedModalRect(xBase+okNokXpos, i*lineHeight-topAdjust+titleDistance, 12*18, 3*18, 18, 18);      // red X
+                this.drawTexturedModalRect(arrowX, y, 12*18, 3*18, 18, 18);      // red X
+                tradeState[i]=2;
             }
         }
 
-// tooltips        
+// tooltips after textures as font rendering resets the texture
         for (int i=0; i<trades.size(); i++) {
+            int y=i*lineHeight-topAdjust+titleDistance;
             MerchantRecipe trade=trades.get(i);
             ItemStack i1=trade.getItemToBuy();
             ItemStack i2=trade.hasSecondItemToBuy() ? trade.getSecondItemToBuy() : null;
             ItemStack o1=trade.getItemToSell();
-            drawTooltip(i1, xBase+firstBuyItemXpos,    i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
-            drawTooltip(i2, xBase+secondBuyItemXpos,   i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
-            drawTooltip(o1, xBase+sellItemXpos,        i*lineHeight-topAdjust+titleDistance, mouseX, mouseY);
+            drawTooltip(i1, xBase+firstBuyItemXpos,    y, mouseX, mouseY);
+            drawTooltip(i2, xBase+secondBuyItemXpos,   y, mouseX, mouseY);
+            drawTooltip(o1, xBase+sellItemXpos,        y, mouseX, mouseY);
+            switch (tradeState[i]) {
+                case 0: this.drawTooltip(I18n.format("msg.cantrade", (Object[]) null), arrowX, y, mouseX, mouseY); break;
+                case 1: this.drawTooltip(I18n.format("msg.notradeinv", (Object[]) null), arrowX, y, mouseX, mouseY); break;
+                case 2: this.drawTooltip(I18n.format("msg.tradelocked", (Object[]) null), arrowX, y, mouseX, mouseY);
+            }
         }
     }
     
@@ -167,6 +178,13 @@ public class BetterGuiMerchant extends GuiMerchant {
             renderToolTip(stack, mousex, mousey);
     }
 
+    private void drawTooltip(String s, int x, int y, int mousex, int mousey) {
+        mousex-=guiLeft;
+        mousey-=guiTop;
+        if (mousex>=x && mousex<=x+16 && mousey>=y && mousey<=y+16)
+            drawHoveringText(s, mousex, mousey);
+    }
+
     @Override
     protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         // System.out.println("click at "+mouseX+"/"+mouseY);
@@ -189,11 +207,14 @@ public class BetterGuiMerchant extends GuiMerchant {
                 for (int i=0; i<tradeIndex; i++)
                     this.actionPerformed(myNextButton);
                 MerchantRecipe recipe=trades.get(tradeIndex);
-                if (!recipe.isRecipeDisabled()
+                while (!recipe.isRecipeDisabled()
                 &&  inputSlotsAreEmpty()
                 &&  hasEnoughItemsInInventory(recipe)
                 &&  canReceiveOutput(recipe.getItemToSell())) {
                     transact(recipe);
+                    if (!isShiftKeyDown()) {
+                        break;
+                    }
                 }
             }
         } else {
