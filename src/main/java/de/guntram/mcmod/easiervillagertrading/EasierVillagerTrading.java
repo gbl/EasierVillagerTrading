@@ -13,7 +13,8 @@ public class EasierVillagerTrading implements InitializationListener {
     @Override
     public void onInitialization() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.easiervillagertrading.json");        
+        Mixins.addConfiguration("mixins.easiervillagertrading.json");
+        Mixins.addConfiguration("mixins.riftpatch-de-guntram.json");
         ConfigurationHandler confHandler = ConfigurationHandler.getInstance();
         confHandler.load(new File("easiervillagertrading.json"));         // TODO
     }
