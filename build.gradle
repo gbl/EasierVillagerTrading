@@ -17,7 +17,7 @@ apply plugin: 'java'
 
 group = "de.guntram.mcmod.easiervillagertrading"
 // group = "de.guntram.mcmod"
-version = "1.13.2-rift1.0.4.77-1.3beta2"
+version = "1.13.2-rift1.0.4.77-1.3beta3"
 archivesBaseName = "easiervillagertrading"
 
 sourceCompatibility = '1.8'
