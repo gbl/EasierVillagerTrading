@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraft.world.World;
+import org.lwjgl.input.Mouse;
 
 /**
  *
@@ -29,6 +30,7 @@ import net.minecraft.world.World;
 public class BetterGuiMerchant extends GuiMerchant {
     
     private int xBase=0;
+    private int scrollCount=0;
     private final int lineHeight=18;
     private final int titleDistance=20;
     private final int firstBuyItemXpos=0;
@@ -37,6 +39,7 @@ public class BetterGuiMerchant extends GuiMerchant {
     private final int sellItemXpos=60;
     private final int textXpos=85;
     private static final ResourceLocation icons=new ResourceLocation(EasierVillagerTrading.MODID, "textures/icons.png");
+    private int frames;
     
     BetterGuiMerchant (InventoryPlayer inv, GuiMerchant template, World world) {
         super(inv, template.getMerchant(), world);
@@ -63,22 +66,31 @@ public class BetterGuiMerchant extends GuiMerchant {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
+        if (++frames%300==0) {
+//            System.out.println("drawForegroundLayer");
+        }
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
         MerchantRecipeList trades=getMerchant().getRecipes(null);
         if (trades==null)
             return;
         int topAdjust=getTopAdjust(trades.size());
         String s = trades.size()+" trades";
-        this.fontRenderer.drawString(s, xBase, -topAdjust, 0xff00ff);
+        this.fontRenderer.drawString(s, xBase+okNokXpos, -topAdjust, 0xff00ff);
+        if (frames%300==0) { // DEBUG
+//            System.out.println("drawing "+s+" at "+xBase+"/"+(-topAdjust)); //DEBUG
+        } //DEBUG
         // First draw all items, then all tooltips. This is extra effort,
         // but we don't want any items in front of any tooltips.
 
         RenderHelper.enableGUIStandardItemLighting();
-        for (int i=0; i<trades.size(); i++) {
-            MerchantRecipe trade=trades.get(i);
+        for (int i=0; i<trades.size()-scrollCount; i++) {
+            MerchantRecipe trade=trades.get(i+scrollCount);
             ItemStack i1=trade.getItemToBuy();
             ItemStack i2=trade.hasSecondItemToBuy() ? trade.getSecondItemToBuy() : null;
             ItemStack o1=trade.getItemToSell();
+            if (frames%300==0) { //DEBUG
+//                System.out.println("drawing items at "+(xBase+firstBuyItemXpos)+ "/"+(i*lineHeight-topAdjust+titleDistance)); //DEBUG
+            } //DEBUG
             drawItem(i1, xBase+firstBuyItemXpos,  i*lineHeight-topAdjust+titleDistance);
             drawItem(i2, xBase+secondBuyItemXpos, i*lineHeight-topAdjust+titleDistance);
             drawItem(o1, xBase+sellItemXpos,      i*lineHeight-topAdjust+titleDistance);
@@ -109,6 +121,10 @@ public class BetterGuiMerchant extends GuiMerchant {
                 String shownEnchants=enchants.toString();
                 if (xBase<0)
                     shownEnchants=fontRenderer.trimStringToWidth(shownEnchants, -xBase-textXpos-5);
+                
+                if (frames%300==0) { //DEBUG
+//                    System.out.println("Enchant"+shownEnchants+" at "+(xBase+firstBuyItemXpos)+ "/"+(i*lineHeight-topAdjust+titleDistance)); //DEBUG
+                } //DEBUG
                 fontRenderer.drawString(shownEnchants, xBase+textXpos, i*lineHeight-topAdjust+24, 0xffff00);
             }
         }
@@ -119,9 +135,9 @@ public class BetterGuiMerchant extends GuiMerchant {
         this.mc.getTextureManager().bindTexture(icons);     // arrows; use standard item lighting for them so we need a separate loop
         int arrowX=xBase+okNokXpos;
         int[] tradeState=new int[trades.size()];
-        for (int i=0; i<trades.size(); i++) {
+        for (int i=0; i<trades.size()-scrollCount; i++) {
             int y=i*lineHeight-topAdjust+titleDistance;
-            MerchantRecipe trade=trades.get(i);        
+            MerchantRecipe trade=trades.get(i+scrollCount);
             if (!trade.isRecipeDisabled()
                 &&  inputSlotsAreEmpty()
                 &&  hasEnoughItemsInInventory(trade)
@@ -135,6 +151,21 @@ public class BetterGuiMerchant extends GuiMerchant {
                 this.drawTexturedModalRect(arrowX, y, 12*18, 3*18, 18, 18);      // red X
                 tradeState[i]=2;
             }
+        }
+        
+        if (scrollCount>0) {
+            this.drawTexturedModalRect(xBase+firstBuyItemXpos, -topAdjust-3, 9*18, 2*18, 18,18);
+        }
+        if ((trades.size()-1-scrollCount)*lineHeight + titleDistance*2 >= height) {
+            if (frames%300==0) { //DEBUG
+//                    System.out.println("size="+trades.size()+
+//                            ", scrolled by "+scrollCount+
+//                            ", including scoll="+(trades.size()+1-scrollCount)+
+//                            ", needed = "+((trades.size()+1-scrollCount)*lineHeight + titleDistance*2)+
+//                            ", compared to height "+height
+//                            );
+            } //DEBUG
+            this.drawTexturedModalRect(xBase+secondBuyItemXpos, -topAdjust-3, 1*18, 2*18, 18,18);
         }
 
 // tooltips after textures as font rendering resets the texture
@@ -159,6 +190,8 @@ public class BetterGuiMerchant extends GuiMerchant {
         int topAdjust = ((numTrades * lineHeight + titleDistance) - this.ySize)/2;
         if (topAdjust < 0)
             topAdjust = 0;
+        if (topAdjust > this.guiTop - this.titleDistance/2)
+            topAdjust = this.guiTop - this.titleDistance/2;
         return topAdjust;
     }
     
@@ -197,28 +230,62 @@ public class BetterGuiMerchant extends GuiMerchant {
                 return;
             int numTrades=trades.size();
             int topAdjust=getTopAdjust(numTrades);
-            int tradeIndex=(mouseY+topAdjust-this.guiTop-titleDistance)/lineHeight;
-            if (tradeIndex>=0 && tradeIndex<numTrades) {
-                // System.out.println("tradeIndex="+tradeIndex+", numTrades="+numTrades);
-                GuiButton myNextButton = this.buttonList.get(0);
-                GuiButton myPrevButton = this.buttonList.get(1);
-                for (int i=0; i<numTrades; i++)
-                    this.actionPerformed(myPrevButton);
-                for (int i=0; i<tradeIndex; i++)
-                    this.actionPerformed(myNextButton);
-                MerchantRecipe recipe=trades.get(tradeIndex);
-                while (!recipe.isRecipeDisabled()
-                &&  inputSlotsAreEmpty()
-                &&  hasEnoughItemsInInventory(recipe)
-                &&  canReceiveOutput(recipe.getItemToSell())) {
-                    transact(recipe);
-                    if (!isShiftKeyDown()) {
-                        break;
+            int yPixel=(int)mouseY+topAdjust-this.guiTop-titleDistance;
+            if (yPixel>=0) {
+                int tradeIndex=yPixel/lineHeight;
+                    // System.out.println("tradeIndex="+tradeIndex+", numTrades="+numTrades);
+                if (tradeIndex>=0 && tradeIndex<numTrades) {
+                    GuiButton myNextButton = this.buttonList.get(0);
+                    GuiButton myPrevButton = this.buttonList.get(1);
+                    for (int i=0; i<numTrades; i++)
+                        this.actionPerformed(myPrevButton);
+                    for (int i=0; i<tradeIndex; i++)
+                        this.actionPerformed(myNextButton);
+                    MerchantRecipe recipe=trades.get(tradeIndex);
+                    while (!recipe.isRecipeDisabled()
+                    &&  inputSlotsAreEmpty()
+                    &&  hasEnoughItemsInInventory(recipe)
+                    &&  canReceiveOutput(recipe.getItemToSell())) {
+                        transact(recipe);
+                        if (!isShiftKeyDown()) {
+                            break;
+                        }
                     }
+                }
+            } else {
+//                System.out.println("yPixel="+yPixel);
+                if (mouseX - this.guiLeft < xBase+secondBuyItemXpos) {
+                    mouseScrolled(1);
+                }
+                else if (mouseX - this.guiLeft < xBase+okNokXpos) {
+                    mouseScrolled(-1);
                 }
             }
         } else {
             super.mouseClicked(mouseX, mouseY, mouseButton);
+        }
+    }
+    
+    @Override
+    public void handleMouseInput() throws IOException
+    {
+        super.handleMouseInput();
+        int i = Mouse.getEventDWheel();
+        if (i!=0) {
+            mouseScrolled(i<0 ? -1 : 1);
+        }
+    }
+        
+    public void mouseScrolled(int delta) {
+        // System.out.println("scrolled by "+delta);
+        MerchantRecipeList trades;
+        if ((trades=getMerchant().getRecipes(null))!=null) {
+            scrollCount-=(int)delta;
+            while ((trades.size()-scrollCount)*lineHeight + titleDistance*2 < height) {
+                scrollCount--;
+            }
+            if (scrollCount<0)
+                scrollCount=0;
         }
     }
     
