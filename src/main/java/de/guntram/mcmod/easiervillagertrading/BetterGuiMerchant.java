@@ -232,7 +232,7 @@ public class BetterGuiMerchant extends GuiMerchant {
             int topAdjust=getTopAdjust(numTrades);
             int yPixel=(int)mouseY+topAdjust-this.guiTop-titleDistance;
             if (yPixel>=0) {
-                int tradeIndex=yPixel/lineHeight;
+                int tradeIndex=yPixel/lineHeight+scrollCount;
                     // System.out.println("tradeIndex="+tradeIndex+", numTrades="+numTrades);
                 if (tradeIndex>=0 && tradeIndex<numTrades) {
                     GuiButton myNextButton = this.buttonList.get(0);
