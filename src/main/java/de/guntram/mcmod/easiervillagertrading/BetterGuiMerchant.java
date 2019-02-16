@@ -231,7 +231,6 @@ public class BetterGuiMerchant extends GuiMerchant {
             int yPixel=(int)mouseY+topAdjust-this.guiTop-titleDistance;
             if (yPixel>=0) {
                 int tradeIndex=(yPixel)/lineHeight+scrollCount;
-                System.out.println("tradeindex="+tradeIndex);
                 if (tradeIndex>=0 && tradeIndex<numTrades) {
                     this.selectedMerchantRecipe = tradeIndex;
                     this.func_195391_j();   // send selected index packet to server

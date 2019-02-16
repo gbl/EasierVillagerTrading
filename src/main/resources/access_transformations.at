@@ -3,3 +3,10 @@ public field clq B I
 #
 # public method net.mincraft.client.gui.GuiMerchant func_195391_j()
 public method clq j ()V 
+#
+# The following are for EasierCrafting but I don't want to decompile every time I switch projects ...
+# public field net/minecraft/client/gui/inventory/GuiContainer xSize, ySize, guiLeft, guiTop
+public field cky f I
+public field cky g I
+public field cky i I
+public field cky s I
