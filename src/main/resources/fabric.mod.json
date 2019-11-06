@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "easiervillagertrading",
+    "version": "1.14.4-fabric0.4.1-1.3",
+    "environment": "client",
+    "entrypoints": {
+        "client": [ "de.guntram.mcmod.easiervillagertrading.EasierVillagerTrading" ],
+        "NOTYETmodmenu": [ "de.guntram.mcmod.easiervillagertrading.MMConfigurationHandler" ]
+    },
+    "custom": {
+        "modmenu:clientsideOnly": true
+    },
+    "mixins": [
+        "mixins.easiervillagertrading.json"
+    ],
+    "depends": {
+      "fabric": "*"
+    },
+    "recommends": {
+      "modmenu" : "*"
+    },
+    "name": "EasierVillagerTrading",
+    "description": "One-click trading with villagers",
+    "icon": "pack.png",
+    "authors": [ "Giselbaer" ],
+    "contact": {
+        "homepage": "https://minecraft.curseforge.com/projects/easiervillagertrading",
+        "sources": "https://github.com/gbl/EasierVillagerTrading",
+        "issues": "https://github.com/gbl/EasierVillagerTrading/issues"
+    }
+
+}
