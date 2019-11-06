@@ -1,11 +1,10 @@
 {
     "schemaVersion": 1,
     "id": "easiervillagertrading",
-    "version": "1.14.4-fabric0.4.1-1.3",
+    "version": "1.14.4-fabric0.4.1-1.4",
     "environment": "client",
     "entrypoints": {
-        "client": [ "de.guntram.mcmod.easiervillagertrading.EasierVillagerTrading" ],
-        "NOTYETmodmenu": [ "de.guntram.mcmod.easiervillagertrading.MMConfigurationHandler" ]
+        "client": [ "de.guntram.mcmod.easiervillagertrading.EasierVillagerTrading" ]
     },
     "custom": {
         "modmenu:clientsideOnly": true

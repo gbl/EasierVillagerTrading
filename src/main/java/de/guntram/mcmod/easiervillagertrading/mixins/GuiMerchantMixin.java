@@ -1,8 +1,8 @@
 package de.guntram.mcmod.easiervillagertrading.mixins;
 
-import de.guntram.mcmod.easiervillagertrading.BetterGuiMerchant;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screens;
+import de.guntram.mcmod.easiervillagertrading.BetterGuiMerchant;
 import net.minecraft.container.ContainerType;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.text.Text;

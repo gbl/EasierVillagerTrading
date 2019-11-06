@@ -15,7 +15,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 archivesBaseName = "easiervillagertrading"
-version = "1.14.4-fabric0.4.1-1.3"
+version = "1.14.4-fabric0.4.1-1.4"
 
 
 minecraft {
@@ -27,8 +27,6 @@ dependencies {
         modCompile "net.fabricmc.fabric-api:fabric-api:0.4.1+build.245-1.14"
     	modCompile "net.fabricmc:fabric-loader:0.6.3+build.168"
         modCompile "io.github.prospector.modmenu:ModMenu:1.6.3-95"
-        modCompile "de.guntram.mcmod:GBfabrictools:1.0.1"
-        include    "de.guntram.mcmod:GBfabrictools:1.0.1"
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task

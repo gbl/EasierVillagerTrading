@@ -9,7 +9,6 @@ package de.guntram.mcmod.easiervillagertrading;
  *
  * @author gbl
  */
-public interface MerchantScreenExporter {
-    public void setRecipeIndex(int index);
-    public void renderNoTrades(int a, int b, float f);
+public interface AutoTrade {
+    public void trade(int tradeIndex);
 }
