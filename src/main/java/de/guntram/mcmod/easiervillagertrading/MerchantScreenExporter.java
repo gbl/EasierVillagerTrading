@@ -11,4 +11,5 @@ package de.guntram.mcmod.easiervillagertrading;
  */
 public interface MerchantScreenExporter {
     public void setRecipeIndex(int index);
+    public void renderNoTrades(int a, int b, float f);
 }

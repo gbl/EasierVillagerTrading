@@ -13,7 +13,7 @@ public class ConfigurationHandler implements ModConfigurationHandler {
     private Configuration config;
     private boolean showLeft;
     private int leftPixelOffset;
-    private boolean autoFocusSearch;
+    private boolean suppressOriginalGUI;
 
     public static ConfigurationHandler getInstance() {
         if (instance==null)
@@ -33,9 +33,11 @@ public class ConfigurationHandler implements ModConfigurationHandler {
         showLeft=config.getBoolean("Trades list left", Configuration.CATEGORY_CLIENT, 
                 false, "Show trades list to the left, for Just Enough Items compatibility");
         leftPixelOffset=config.getInt("Trades left pixel offset", Configuration.CATEGORY_CLIENT,
-                0, 0, Integer.MAX_VALUE, 
+                0, 0, 2000, 
                 "How many pixels left of the GUI the trades list will be shown. Use 0 for auto detect. "+
                 "Only used if Trades list left is true.");
+        suppressOriginalGUI=config.getBoolean("Suppress Buttons", Configuration.CATEGORY_CLIENT,
+                false, "Remove MinceCraft Buttons");
         if (config.hasChanged())
             config.save();
     }
@@ -46,7 +48,7 @@ public class ConfigurationHandler implements ModConfigurationHandler {
     
     public static boolean showLeft() { return getInstance().showLeft; }
     public static int leftPixelOffset() { return getInstance().leftPixelOffset; }
-    public static boolean autoFocusSearch() { return getInstance().autoFocusSearch; }
+    public static boolean suppressOriginalGUI() { return getInstance().suppressOriginalGUI; }
 
     @Override
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {

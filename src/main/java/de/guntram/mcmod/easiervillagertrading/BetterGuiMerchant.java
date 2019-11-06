@@ -57,7 +57,27 @@ public class BetterGuiMerchant extends MerchantScreen {
         }
         frames=0; //DEBUG
     }
+
+    @Override
+    protected void init() {
+        super.init();
+        if (ConfigurationHandler.suppressOriginalGUI()) {
+            this.buttons.clear();
+        }
+    }
     
+    @Override
+    public void render(int a, int b, float f) {
+        if (ConfigurationHandler.suppressOriginalGUI()) {
+            this.renderBackground();
+            ((MerchantScreenExporter)this).renderNoTrades(a, b, f);     // basically super.super.render()
+            drawMouseoverTooltip(a, b);
+        } else {
+            super.render(a, b, f);
+        }
+    }
+
+    @Override
     protected void drawForeground(int mouseX, int mouseY)
     {
         if (++frames%300==0) {
