@@ -6,11 +6,10 @@
 package de.guntram.mcmod.easiervillagertrading;
 
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
-import net.minecraft.container.MerchantContainer;
-import net.minecraft.container.SlotActionType;
-
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TraderOfferList;
@@ -23,14 +22,14 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     
     private int frames;     //DEBUG
     
-    public BetterGuiMerchant (MerchantContainer container, PlayerInventory inv, Text title) {
-        super(container, inv, title);
+    public BetterGuiMerchant (MerchantScreenHandler handler, PlayerInventory inv, Text title) {
+        super(handler, inv, title);
         frames=0; //DEBUG
     }
     
     @Override
     public void trade(int tradeIndex) {
-        TraderOfferList trades=container.getRecipes();
+        TraderOfferList trades=handler.getRecipes();
         TradeOffer recipe = trades.get(tradeIndex);
         while (!recipe.isDisabled()
         &&  inputSlotsAreEmpty()
@@ -45,13 +44,13 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     
     private boolean inputSlotsAreEmpty() {
         boolean result =
-            container.getSlot(0).getStack().isEmpty()
-        &&  container.getSlot(1).getStack().isEmpty()
-        &&  container.getSlot(2).getStack().isEmpty();
+            handler.getSlot(0).getStack().isEmpty()
+        &&  handler.getSlot(1).getStack().isEmpty()
+        &&  handler.getSlot(2).getStack().isEmpty();
         if (frames % 300 == 0) { /*
-            System.out.println("stack 0: "+container.getSlot(0).getStack().getTranslationKey()+"/"+container.getSlot(0).getStack().getCount());
-            System.out.println("stack 1: "+container.getSlot(1).getStack().getTranslationKey()+"/"+container.getSlot(0).getStack().getCount());
-            System.out.println("stack 2: "+container.getSlot(2).getStack().getTranslationKey()+"/"+container.getSlot(0).getStack().getCount());
+            System.out.println("stack 0: "+handler.getSlot(0).getStack().getTranslationKey()+"/"+handler.getSlot(0).getStack().getCount());
+            System.out.println("stack 1: "+handler.getSlot(1).getStack().getTranslationKey()+"/"+handler.getSlot(0).getStack().getCount());
+            System.out.println("stack 2: "+handler.getSlot(2).getStack().getTranslationKey()+"/"+handler.getSlot(0).getStack().getCount());
             System.out.println("result = "+result);
         */ }
         return result;
@@ -68,8 +67,8 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     
     private boolean hasEnoughItemsInInventory(ItemStack stack) {
         int remaining=stack.getCount();
-        for (int i=container.slotList.size()-36; i<container.slotList.size(); i++) {
-            ItemStack invstack=container.getSlot(i).getStack();
+        for (int i=handler.slots.size()-36; i<handler.slots.size(); i++) {
+            ItemStack invstack=handler.getSlot(i).getStack();
             if (invstack==null)
                 continue;
             if (areItemStacksMergable(stack, invstack)) {
@@ -84,8 +83,8 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
 
     private boolean canReceiveOutput(ItemStack stack) {
         int remaining=stack.getCount();
-        for (int i=container.slotList.size()-36; i<container.slotList.size(); i++) {
-            ItemStack invstack=container.getSlot(i).getStack();
+        for (int i=handler.slots.size()-36; i<handler.slots.size(); i++) {
+            ItemStack invstack=handler.getSlot(i).getStack();
             if (invstack==null || invstack.isEmpty()) {
                 //System.out.println("can put result into empty slot "+i);
                 return true;
@@ -128,8 +127,8 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
      */
     private int fillSlot(int slot, ItemStack stack) {
         int remaining=stack.getCount();
-        for (int i=container.slotList.size()-36; i<container.slotList.size(); i++) {
-            ItemStack invstack=container.getSlot(i).getStack();
+        for (int i=handler.slots.size()-36; i<handler.slots.size(); i++) {
+            ItemStack invstack=handler.getSlot(i).getStack();
             if (invstack==null)
                 continue;
             boolean needPutBack=false;
@@ -165,8 +164,8 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     private void getslot(int slot, ItemStack stack, int... forbidden) {
         int remaining=stack.getCount();
         slotClick(slot);
-        for (int i=container.slotList.size()-36; i<container.slotList.size(); i++) {
-            ItemStack invstack=container.getSlot(i).getStack();
+        for (int i=handler.slots.size()-36; i<handler.slots.size(); i++) {
+            ItemStack invstack=handler.getSlot(i).getStack();
             if (invstack==null || invstack.isEmpty()) {
                 continue;
             }
@@ -182,7 +181,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
         }
         
         // When looking for an empty slot, don't take one that we want to put some input back to.
-        for (int i=container.slotList.size()-36; i<container.slotList.size(); i++) {
+        for (int i=handler.slots.size()-36; i<handler.slots.size(); i++) {
             boolean isForbidden=false;
             for (int f:forbidden) {
                 if (i==f)
@@ -190,7 +189,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
             }
             if (isForbidden)
                 continue;
-            ItemStack invstack=container.getSlot(i).getStack();
+            ItemStack invstack=handler.getSlot(i).getStack();
             if (invstack==null || invstack.isEmpty()) {
                 slotClick(i);
                 // System.out.println("putting result into empty slot "+i);
