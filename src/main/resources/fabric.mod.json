@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "easiervillagertrading",
-    "version": "1.14.4-fabric0.4.1-1.4",
+    "version": "${version}",
     "environment": "client",
     "entrypoints": {
         "client": [ "de.guntram.mcmod.easiervillagertrading.EasierVillagerTrading" ]
