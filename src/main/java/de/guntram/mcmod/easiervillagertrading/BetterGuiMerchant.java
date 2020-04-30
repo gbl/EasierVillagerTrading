@@ -70,7 +70,7 @@ public class BetterGuiMerchant extends GuiMerchant {
 //            System.out.println("drawForegroundLayer");
         }
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        MerchantRecipeList trades=getMerchant().getRecipes(null);
+        MerchantRecipeList trades=getMerchant().getRecipes(mc.player);
         if (trades==null)
             return;
         int topAdjust=getTopAdjust(trades.size());
@@ -225,7 +225,7 @@ public class BetterGuiMerchant extends GuiMerchant {
         &&  (mouseX - this.guiLeft) >= xBase
         &&  (mouseX - this.guiLeft) <= xBase+textXpos
         ) {
-            MerchantRecipeList trades=getMerchant().getRecipes(null);
+            MerchantRecipeList trades=getMerchant().getRecipes(mc.player);
             if (trades==null)
                 return;
             int numTrades=trades.size();
@@ -279,7 +279,7 @@ public class BetterGuiMerchant extends GuiMerchant {
     public void mouseScrolled(int delta) {
         // System.out.println("scrolled by "+delta);
         MerchantRecipeList trades;
-        if ((trades=getMerchant().getRecipes(null))!=null) {
+        if ((trades=getMerchant().getRecipes(mc.player))!=null) {
             scrollCount-=(int)delta;
             while ((trades.size()-scrollCount)*lineHeight + titleDistance*2 < height) {
                 scrollCount--;
