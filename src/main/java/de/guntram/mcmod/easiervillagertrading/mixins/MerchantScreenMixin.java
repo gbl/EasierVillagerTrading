@@ -7,8 +7,8 @@ package de.guntram.mcmod.easiervillagertrading.mixins;
 
 import de.guntram.mcmod.easiervillagertrading.AutoTrade;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MerchantScreen.class)
-public abstract class MerchantScreenMixin extends ScreenWithHandler<MerchantScreenHandler> {
+public abstract class MerchantScreenMixin extends HandledScreen<MerchantScreenHandler> {
     
     @Shadow private int selectedIndex;
 
