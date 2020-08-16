@@ -116,6 +116,11 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
             slotClick(1);
             slotClick(putback1);
         }
+        // This is a serious hack. 
+        // ScreenHandler checks:
+        //    if (actionType == SlotActionType.SWAP && clickData >= 0 && clickData < 9) 
+        // so this is a NOP on (a normal) server, but our mixin can watch for it and force an inventory resend.
+        this.onMouseClick(null, /* slot*/ 0, /* clickData*/ 99, SlotActionType.SWAP);
     }
 
     /**
