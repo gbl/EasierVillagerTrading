@@ -31,12 +31,14 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     public void trade(int tradeIndex) {
         TraderOfferList trades=handler.getRecipes();
         TradeOffer recipe = trades.get(tradeIndex);
+        int safeguard = 0;
         while (!recipe.isDisabled()
+        &&  client.player.inventory.getCursorStack().isEmpty()
         &&  inputSlotsAreEmpty()
         &&  hasEnoughItemsInInventory(recipe)
         &&  canReceiveOutput(recipe.getSellItem())) {
             transact(recipe);
-            if (!hasShiftDown()) {
+            if (!hasShiftDown() || ++safeguard > 50) {
                 break;
             }
         }
