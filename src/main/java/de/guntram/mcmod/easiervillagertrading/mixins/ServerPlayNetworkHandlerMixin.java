@@ -1,6 +1,6 @@
 package de.guntram.mcmod.easiervillagertrading.mixins;
 
-import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -16,11 +16,11 @@ public class ServerPlayNetworkHandlerMixin {
 
     @Shadow public ServerPlayerEntity player;
     
-    @Inject(method="onClickWindow", at=@At("RETURN"))
-    private void clickWindowSendsCraftResult(ClickWindowC2SPacket packet, CallbackInfo ci) {
+    @Inject(method="onClickSlot", at=@At("RETURN"))
+    private void clickWindowSendsCraftResult(ClickSlotC2SPacket packet, CallbackInfo ci) {
         if (this.player.currentScreenHandler instanceof MerchantScreenHandler
         &&  packet.getSlot() == 0 && packet.getClickData() == 99 && packet.getActionType() == SlotActionType.SWAP) {
-            this.player.openHandledScreen(this.player.currentScreenHandler);
+            this.player.refreshScreenHandler(this.player.currentScreenHandler);
         }
     }
 }

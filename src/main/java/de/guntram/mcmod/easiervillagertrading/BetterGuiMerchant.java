@@ -12,7 +12,7 @@ import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TraderOfferList;
+import net.minecraft.village.TradeOfferList;
 
 /**
  *
@@ -29,7 +29,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     
     @Override
     public void trade(int tradeIndex) {
-        TraderOfferList trades=handler.getRecipes();
+        TradeOfferList trades=handler.getRecipes();
         TradeOffer recipe = trades.get(tradeIndex);
         int safeguard = 0;
         while (!recipe.isDisabled()
