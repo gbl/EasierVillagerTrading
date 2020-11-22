@@ -19,8 +19,8 @@ public abstract class GuiMerchantMixin {
             int any, Text component, CallbackInfo ci) {
 
         if (type == ScreenHandlerType.MERCHANT) {
-            MerchantScreenHandler container = ScreenHandlerType.MERCHANT.create(any, client.player.inventory);
-            BetterGuiMerchant screen = new BetterGuiMerchant(container, client.player.inventory, component);
+            MerchantScreenHandler container = ScreenHandlerType.MERCHANT.create(any, client.player.getInventory());
+            BetterGuiMerchant screen = new BetterGuiMerchant(container, client.player.getInventory(), component);
             client.player.currentScreenHandler = container;
             client.openScreen(screen);
             ci.cancel();
