@@ -1,8 +1,15 @@
-# EasierVillagerTrading
+Mod description
+===============
 
-This is a mod for people who trade with villagers a lot. It does not add any functioniality to villagers, and it doesn't allow you to do anything you can't do in vanilla Minecraft, but it allows you to do the same things with a lot less clicks and mouse movements. Because of this, it can be used with standard, unmodded, servers, You should still check your server owner if they're ok with you using it, but as long as your server has a  "no unfair advantage" policy, they may allow it.
+This mod speeds up trading with villagers a lot, by changing the meaning of the buttons in the trade selection GUI:
 
-When you open a villager trading window, you'll get a list of all item trades the villager offers next to it. This list includs enchantments in the case of smiths and librarians, and shows you at a glance which trades are enabled and which aren't. Clicking on a trade will execute it once, without you needing to move items to/from the merchant UI.
+- Clicking a trade will execute this trade once (instead of just preparing it)
+- Shift-clicking a trade will execute it as often as possible (until either the villager locks the trade or you run out of trading materials)
+- Ctrl-clicking the trade will prepare, but not execute it (the default behaviour of the selection buttons)
+
+Older versions of the mod (before MC 1.14) brought their own GUI, as those versions didn't have a quick way to select a trade. With 1.14, this GUI got removed. If you've been using one of the older versions, don't think the new version doesn't work; it just doesn't show the GUI anymore as there's no real reason to have it.
+
+The mod generally works with servers as well. If it doesn't with yours, your server owner may have some AntiCheat plugin enabled; there's not much I can do in this case.
 
 To make sure the mod doesn't slow down your minecraft, 
 it has been optimized using
