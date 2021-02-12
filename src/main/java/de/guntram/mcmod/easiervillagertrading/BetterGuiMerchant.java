@@ -29,6 +29,9 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
     
     @Override
     public void trade(int tradeIndex) {
+        
+        boolean shiftSwapped = ConfigurationHandler.isShiftSwapped();
+        
         TradeOfferList trades=handler.getRecipes();
         TradeOffer recipe = trades.get(tradeIndex);
         int safeguard = 0;
@@ -38,7 +41,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
         &&  hasEnoughItemsInInventory(recipe)
         &&  canReceiveOutput(recipe.getSellItem())) {
             transact(recipe);
-            if (!hasShiftDown() || ++safeguard > 50) {
+            if (hasShiftDown() == shiftSwapped || ++safeguard > 50) {
                 break;
             }
         }

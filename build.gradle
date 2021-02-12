@@ -20,7 +20,7 @@ ext.Versions = new Properties()
 Versions.load(file("Versionfiles/mcversion-1.16.5.properties").newReader())
 
 archivesBaseName = "easiervillagertrading"
-ext.projectVersion = "1.5.3"
+ext.projectVersion = "1.5.4"
 
 version = "${Versions['minecraft_version']}-fabric${Versions['fabric_versiononly']}-${project.projectVersion}"
 
@@ -46,6 +46,8 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${Versions['loader_version']}"
     modCompile "net.fabricmc.fabric-api:fabric-api:${Versions['fabric_version']}"
     modCompile "io.github.prospector:modmenu:${Versions['modmenu_version']}"
+    modImplementation "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"
+    include    "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"    
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
@@ -76,6 +78,9 @@ task publishModrinth (type: TaskModrinthUpload){
 
 curseforge {
     apiKey = System.getenv("CURSEFORGE_TOKEN")
+    if (apiKey == null || apiKey == "") {
+        apiKey = "DUMMY"        // or CurseGradle will yell even when not used
+    }
     project {
         id = '261605'
         releaseType = 'release'
