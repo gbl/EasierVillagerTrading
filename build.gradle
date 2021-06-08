@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id "com.modrinth.minotaur" version "1.1.0"
+	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 repositories {
@@ -72,3 +73,17 @@ task publishModrinth (type: TaskModrinthUpload){
     addLoader('fabric')
 }
 
+curseforge {
+    apiKey = System.getenv("CURSEFORGE_TOKEN") ?: "0"
+    project {
+        id = '261605'
+        releaseType = 'release'
+        addGameVersion("${Versions['minecraft_version']}")
+        addGameVersion("Java "+targetCompatibility)
+        addGameVersion("Fabric")
+        mainArtifact(remapJar)
+    }
+    options {
+        forgeGradleIntegration = false
+    }
+}
