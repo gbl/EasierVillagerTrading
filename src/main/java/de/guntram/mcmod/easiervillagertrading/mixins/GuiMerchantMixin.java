@@ -22,7 +22,7 @@ public abstract class GuiMerchantMixin {
             MerchantScreenHandler container = ScreenHandlerType.MERCHANT.create(any, client.player.getInventory());
             BetterGuiMerchant screen = new BetterGuiMerchant(container, client.player.getInventory(), component);
             client.player.currentScreenHandler = container;
-            client.openScreen(screen);
+            client.setScreen(screen);
             ci.cancel();
         }
     }

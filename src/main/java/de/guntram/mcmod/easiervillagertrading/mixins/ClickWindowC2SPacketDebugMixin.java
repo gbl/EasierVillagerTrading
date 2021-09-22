@@ -16,8 +16,8 @@ public class ClickWindowC2SPacketDebugMixin {
     
     static private final Logger LOGGER = LogManager.getLogger();
     
-    @Inject(method="<init>(IIILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/item/ItemStack;Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;)V", at=@At("RETURN"))
-    private void dumpC2SNewInfo(int syncid, int slot, int button, SlotActionType actionType, ItemStack stack,
+    @Inject(method="<init>(IIIILnet/minecraft/screen/slot/SlotActionType;Lnet/minecraft/item/ItemStack;Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;)V", at=@At("RETURN"))
+    private void dumpC2SNewInfo(int syncid, int revision, int slot, int button, SlotActionType actionType, ItemStack stack,
             Int2ObjectMap<ItemStack> int2ObjectMap, CallbackInfo ci) {
         LOGGER.debug(() -> "new ClickWindow C2S: syncid="+syncid+", slot="+slot+", button="+button+
                 ", action="+actionType.toString()+", item="+stack.getCount()+" of "+stack.getName().asString()+
