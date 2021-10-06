@@ -1,0 +1,4 @@
+{
+    "easiervillagertrading.config.swapshift": "\"обменять всё\" по умолчанию",
+    "easiervillagertrading.config.tt.swapshift": "Если выключено, используйте Shift, чтобы обменять всё. Если включено, по нажатию обмениваются все предметы, а с Shift – по одному."
+}
