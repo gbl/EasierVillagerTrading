@@ -20,8 +20,7 @@
       "fabric": "*"
     },
     "recommends": {
-      "modmenu" : "*",
-      "modupdater": ">=1.1.7"        
+      "modmenu" : "*"
     },
     "name": "EasierVillagerTrading",
     "description": "One-click trading with villagers\n\nIn 1.14, this mod doesn't bring it's own GUI anymore; instead, it modifies the behaviour of the standard GUI.\n\n- Click to execute a trade once (as opposed to just selecting it)\n- Shift-Click to execute a trade as often as possible\n- Ctrl-Click to prepare the trade (just like a normal click in the original GUI )",
