@@ -20,7 +20,7 @@ public class ClickWindowC2SPacketDebugMixin {
     private void dumpC2SNewInfo(int syncid, int revision, int slot, int button, SlotActionType actionType, ItemStack stack,
             Int2ObjectMap<ItemStack> int2ObjectMap, CallbackInfo ci) {
         LOGGER.debug(() -> "new ClickWindow C2S: syncid="+syncid+", slot="+slot+", button="+button+
-                ", action="+actionType.toString()+", item="+stack.getCount()+" of "+stack.getName().asString()+
+                ", action="+actionType.toString()+", item="+stack.getCount()+" of "+stack.getName().getString()+
                 "");
     }
 }
