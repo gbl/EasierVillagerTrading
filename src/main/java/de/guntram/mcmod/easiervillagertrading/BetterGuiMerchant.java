@@ -76,7 +76,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
             ItemStack invstack=handler.getSlot(i).getStack();
             if (invstack==null)
                 continue;
-            if (areItemStacksMergable(stack, invstack)) {
+            if (ItemStack.canCombine(stack, invstack)) {
                 //System.out.println("taking "+invstack.getCount()+" items from slot # "+i);
                 remaining-=invstack.getCount();
             }
@@ -94,7 +94,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
                 //System.out.println("can put result into empty slot "+i);
                 return true;
             }
-            if (areItemStacksMergable(stack, invstack)
+            if (ItemStack.canCombine(stack, invstack)
             &&  stack.getMaxCount() >= stack.getCount() + invstack.getCount()) {
                 //System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
                 remaining-=(invstack.getMaxCount()-invstack.getCount());
@@ -142,7 +142,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
             if (invstack==null)
                 continue;
             boolean needPutBack=false;
-            if (areItemStacksMergable(stack, invstack)) {
+            if (ItemStack.canCombine(stack, invstack)) {
                 if (stack.getCount()+invstack.getCount() > stack.getMaxCount())
                     needPutBack=true;
                 remaining-=invstack.getCount();
@@ -161,16 +161,6 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
         return -1;
     }
     
-    private boolean areItemStacksMergable(ItemStack a, ItemStack b) {
-        if (a==null || b==null)
-            return false;
-        if (a.getItem() == b.getItem()
-        &&  (!a.isDamageable() || a.getDamage()==b.getDamage())
-        &&   ItemStack.areNbtEqual(a, b))
-            return true;
-        return false;
-    }
-    
     private void getslot(int slot, ItemStack stack, int... forbidden) {
         int remaining=stack.getCount();
         slotClick(slot);
@@ -179,7 +169,7 @@ public class BetterGuiMerchant extends MerchantScreen implements AutoTrade {
             if (invstack==null || invstack.isEmpty()) {
                 continue;
             }
-            if (areItemStacksMergable(stack, invstack)
+            if (ItemStack.canCombine(stack, invstack)
                 && invstack.getCount() < invstack.getMaxCount()
             ) {
                 // System.out.println("Can merge "+(invstack.getMaxStackSize()-invstack.getCount())+" items with slot "+i);
