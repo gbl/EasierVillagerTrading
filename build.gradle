@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-+'
+	id 'fabric-loom' version '1.2-SNAPSHOT'
 	id "com.modrinth.minotaur" version "2.+"
 	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
@@ -20,10 +20,10 @@ sourceCompatibility = 17
 targetCompatibility = 17
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-1.19.3.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-1.20.1.properties").newReader())
 
 archivesBaseName = "easiervillagertrading"
-ext.projectVersion = "1.5.4"
+ext.projectVersion = "1.5.5"
 
 version = "${Versions['minecraft_version']}-fabric${Versions['fabric_versiononly']}-${project.projectVersion}"
 
@@ -53,7 +53,7 @@ dependencies {
 // if it is present.
 // If you remove this task, sources will not be generated.
 task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = 'sources'
+	archiveClassifier = 'sources'
 	from sourceSets.main.allSource
 }
 
