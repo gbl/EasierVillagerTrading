@@ -10,7 +10,7 @@ public class MMConfigurationHandler implements ModMenuApi
 {
     @Override
     public ConfigScreenFactory getModConfigScreenFactory() {
-        return screen -> new GuiModOptions(screen, EasierVillagerTrading.MODNAME, ConfigurationProvider.getHandler(EasierVillagerTrading.MODNAME));
+        return screen -> GuiModOptions.getGuiModOptions(screen, EasierVillagerTrading.MODNAME, ConfigurationProvider.getHandler(EasierVillagerTrading.MODNAME));
     }
 
 }

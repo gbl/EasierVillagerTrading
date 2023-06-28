@@ -1,10 +1,13 @@
 plugins {
-	id 'fabric-loom' version '0.12-+'
+    id 'fabric-loom' version '1.2-SNAPSHOT'
 	id "com.modrinth.minotaur" version "2.+"
 	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 repositories {
+    maven {
+        url = "file://tmp/mymavenrepo/"
+    }
 	maven {
 		url = "https://maven.fabricmc.net"
 	}
@@ -14,13 +17,14 @@ repositories {
 	maven {
 		url = "https://maven.terraformersmc.com/releases/"
 	}
+    maven { url "https://maven.shedaniel.me/" }
 }
 
 sourceCompatibility = 17
 targetCompatibility = 17
 
 ext.Versions = new Properties()
-Versions.load(file("Versionfiles/mcversion-1.19.3.properties").newReader())
+Versions.load(file("Versionfiles/mcversion-1.20.properties").newReader())
 
 archivesBaseName = "easiervillagertrading"
 ext.projectVersion = "1.5.4"
@@ -49,12 +53,8 @@ dependencies {
     include    "de.guntram.mcmod:GBfabrictools:${Versions['gbfabrictools_version']}"    
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
+java {
+    withSourcesJar()
 }
 
 jar {
